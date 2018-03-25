@@ -23,52 +23,75 @@ namespace ContentModeration.Controllers
         }
 
         /// <summary>
-        /// Post an image for content moderation
+        /// Post a json image for content moderation
         /// </summary>
         /// <remarks>
-        ///     *only for application/json*
-        ///     POST /Images
+        ///     GET /Images
         ///     {
         ///         "DataRepresentation":"URL",
         ///         "Value":"https://moderatorsampleimages.blob.core.windows.net/samples/sample.jpg"
         ///     }
         /// </remarks>
-        /// <param name="data"></param>
+        /// <param name="data">Json data</param>
         /// <returns></returns>
         [Produces("application/json")]
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody]Data data)
+        [HttpGet]
+        public async Task<IActionResult> Get([FromBody]Data data)
         {
-            // <param name="contentType">Acceptable as application/json, image/gif, image/jpeg, image/png, image/bmp, image/tiff</param>
             try
             {
                 // Request body
                 byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
 
-                HttpResponseMessage responseMessage;
-                string jsonResponse;
-
-                using (var client = new HttpClient())
-                {
-                    // Request headers
-                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.Value.OcpApimSubscriptionKey);
-
-                    using (var content = new ByteArrayContent(byteData))
-                    {
-                        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                        responseMessage = await client.PostAsync(_contentModerationUrl, content);
-                        jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                    }
-                }
-
-                return responseMessage.StatusCode == HttpStatusCode.OK
-                    ? Ok(JsonConvert.DeserializeObject<Response>(jsonResponse))
-                    : StatusCode((int) responseMessage.StatusCode, jsonResponse);
+                return await ProcessImage(byteData);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex);
             }
+        }
+
+        /// <summary>
+        /// Post a binary image for content moderation
+        /// </summary>
+        /// <param name="contentType">Acceptable as application/json, image/gif, image/jpeg, image/png, image/bmp, image/tiff</param>
+        /// <param name="byteData"></param>
+        /// <returns></returns>
+        [Produces("application/json")]
+        [HttpPost]
+        public async Task<IActionResult> Post(string contentType, byte[] byteData)
+        {
+            try
+            {
+                return await ProcessImage(byteData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        private async Task<IActionResult> ProcessImage(byte[] byteData)
+        {
+            HttpResponseMessage responseMessage;
+            string jsonResponse;
+
+            using (var client = new HttpClient())
+            {
+                // Request headers
+                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.Value.OcpApimSubscriptionKey);
+
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    responseMessage = await client.PostAsync(_contentModerationUrl, content);
+                    jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+                }
+            }
+
+            return responseMessage.StatusCode == HttpStatusCode.OK
+                ? Ok(JsonConvert.DeserializeObject<Response>(jsonResponse))
+                : StatusCode((int)responseMessage.StatusCode, jsonResponse);
         }
     }
 }
