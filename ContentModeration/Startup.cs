@@ -49,8 +49,6 @@ namespace ContentModeration
                         Url = "http://sharepoint4developers.net"
                     }
                 });
-                //c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
-                //c.CustomSchemaIds(x => x.FullName);
 
                 // Set the comments path for the Swagger JSON and UI.
                 var basePath = AppContext.BaseDirectory;

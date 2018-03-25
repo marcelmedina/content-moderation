@@ -21,7 +21,7 @@ namespace ContentModeration.Tests.Images
         public void Setup()
         {
             _settings = Options.Create<Settings>(new Settings());
-            _settings.Value.OcpApimSubscriptionKey = "8ada31fece3e4155bc862e68baf2c5de";
+            _settings.Value.OcpApimSubscriptionKey = "<your_contentmoderationapi_key>";
 
             _data = new Data()
             {
