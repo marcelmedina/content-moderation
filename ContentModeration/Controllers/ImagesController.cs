@@ -43,7 +43,7 @@ namespace ContentModeration.Controllers
                 // Request body
                 byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
 
-                return await ProcessImage(byteData);
+                return await ProcessImage(byteData, "application/json");
             }
             catch (Exception ex)
             {
@@ -63,7 +63,7 @@ namespace ContentModeration.Controllers
         {
             try
             {
-                return await ProcessImage(byteData);
+                return await ProcessImage(byteData, contentType);
             }
             catch (Exception ex)
             {
@@ -71,7 +71,7 @@ namespace ContentModeration.Controllers
             }
         }
 
-        private async Task<IActionResult> ProcessImage(byte[] byteData)
+        public async Task<IActionResult> ProcessImage(byte[] byteData, string contentType)
         {
             HttpResponseMessage responseMessage;
             string jsonResponse;
@@ -83,7 +83,7 @@ namespace ContentModeration.Controllers
 
                 using (var content = new ByteArrayContent(byteData))
                 {
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                    content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
                     responseMessage = await client.PostAsync(_contentModerationUrl, content);
                     jsonResponse = await responseMessage.Content.ReadAsStringAsync();
                 }
