@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using ContentModeration.Models;
+using ContentModeration.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,8 @@ namespace ContentModeration
                 Configuration.GetSection("Settings").Bind(options);
                 options.OcpApimSubscriptionKey = Configuration.GetSection("Settings:Ocp-Apim-Subscription-Key").Value;
             });
+
+            services.AddTransient<IContentModerationService, ContentModerationService>();
 
             services.AddMvc();
 

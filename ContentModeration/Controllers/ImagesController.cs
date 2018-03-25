@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using ContentModeration.Models;
+using ContentModeration.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace ContentModeration.Controllers
@@ -14,12 +11,11 @@ namespace ContentModeration.Controllers
     [Route("api/[controller]")]
     public class ImagesController : Controller
     {
-        private readonly IOptions<Settings> _settings;
-        private readonly string _contentModerationUrl ="https://australiaeast.api.cognitive.microsoft.com/contentmoderator/moderate/v1.0/ProcessImage/Evaluate";
+        private readonly IContentModerationService _service;
 
-        public ImagesController(IOptions<Settings> settings)
+        public ImagesController(IContentModerationService service)
         {
-            _settings = settings;
+            _service = service;
         }
 
         /// <summary>
@@ -35,15 +31,15 @@ namespace ContentModeration.Controllers
         /// <param name="data">Json data</param>
         /// <returns></returns>
         [Produces("application/json")]
-        [HttpGet]
-        public async Task<IActionResult> Get([FromBody]Data data)
+        [HttpPut]
+        public async Task<IActionResult> Submit([FromBody]Data data)
         {
             try
             {
                 // Request body
                 byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
 
-                return await ProcessImage(byteData, "application/json");
+                return await _service.ProcessImage(byteData, "application/json");
             }
             catch (Exception ex)
             {
@@ -54,7 +50,7 @@ namespace ContentModeration.Controllers
         /// <summary>
         /// Post a binary image for content moderation
         /// </summary>
-        /// <param name="contentType">Acceptable as application/json, image/gif, image/jpeg, image/png, image/bmp, image/tiff</param>
+        /// <param name="contentType">Acceptable as image/gif, image/jpeg, image/png, image/bmp</param>
         /// <param name="byteData"></param>
         /// <returns></returns>
         [Produces("application/json")]
@@ -63,35 +59,12 @@ namespace ContentModeration.Controllers
         {
             try
             {
-                return await ProcessImage(byteData, contentType);
+                return await _service.ProcessImage(byteData, contentType);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex);
             }
-        }
-
-        public async Task<IActionResult> ProcessImage(byte[] byteData, string contentType)
-        {
-            HttpResponseMessage responseMessage;
-            string jsonResponse;
-
-            using (var client = new HttpClient())
-            {
-                // Request headers
-                client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _settings.Value.OcpApimSubscriptionKey);
-
-                using (var content = new ByteArrayContent(byteData))
-                {
-                    content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                    responseMessage = await client.PostAsync(_contentModerationUrl, content);
-                    jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-                }
-            }
-
-            return responseMessage.StatusCode == HttpStatusCode.OK
-                ? Ok(JsonConvert.DeserializeObject<Response>(jsonResponse))
-                : StatusCode((int)responseMessage.StatusCode, jsonResponse);
         }
     }
 }

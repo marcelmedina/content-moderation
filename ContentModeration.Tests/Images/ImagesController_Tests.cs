@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ContentModeration.Controllers;
 using ContentModeration.Models;
+using ContentModeration.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace ContentModeration.Tests.Images
     {
         private IOptions<Settings> _settings;
         private Data _data;
+        private ContentModerationService _service;
 
         [SetUp]
         public void Setup()
@@ -26,6 +28,8 @@ namespace ContentModeration.Tests.Images
                 DataRepresentation = "URL",
                 Value = "https://moderatorsampleimages.blob.core.windows.net/samples/sample.jpg"
             };
+
+            _service = new ContentModerationService(_settings);
         }
 
         [Test]
@@ -35,8 +39,7 @@ namespace ContentModeration.Tests.Images
 
             byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(_data));
             
-            ImagesController controller = new ImagesController(_settings);
-            var result = await controller.ProcessImage(byteData, "application/json");
+            var result = await _service.ProcessImage(byteData, "application/json");
 
             Assert.AreEqual(200, ((Microsoft.AspNetCore.Mvc.ObjectResult)result).StatusCode);
             Assert.IsTrue(((Microsoft.AspNetCore.Mvc.ObjectResult)result).Value.GetType() == typeof(Response));
@@ -52,8 +55,7 @@ namespace ContentModeration.Tests.Images
 
             byte[] imgdata = System.IO.File.ReadAllBytes(Path.GetFullPath($@"Images\{file}"));
 
-            ImagesController controller = new ImagesController(_settings);
-            var result = await controller.ProcessImage(imgdata, contentType);
+            var result = await _service.ProcessImage(imgdata, contentType);
 
             Assert.AreEqual(200, ((Microsoft.AspNetCore.Mvc.ObjectResult)result).StatusCode);
             Assert.IsTrue(((Microsoft.AspNetCore.Mvc.ObjectResult)result).Value.GetType() == typeof(Response));
