@@ -1,0 +1,274 @@
+{
+    "$connections": {
+        "value": {
+            "azureblob": {
+                "connectionId": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/connections/azureblob",
+                "connectionName": "azureblob",
+                "id": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/providers/Microsoft.Web/locations/australiaeast/managedApis/azureblob"
+            },
+            "office365": {
+                "connectionId": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/connections/office365-1",
+                "connectionName": "office365-1",
+                "id": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/providers/Microsoft.Web/locations/australiaeast/managedApis/office365"
+            }
+        }
+    },
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Condition": {
+                "actions": {
+                    "Send_an_email": {
+                        "inputs": {
+                            "body": {
+                                "Body": "Incoming content is either adult/racy\nAdult classification score: @{body('Parse_JSON')?['adultClassificationScore']}\nRacy classification score: @{body('Parse_JSON')?['racyClassificationScore']}\n\nimage url: @{variables('BaseContentUrl')}@{triggerBody()?['Path']}",
+                                "Subject": "Inappropriate content determined",
+                                "To": ""
+                            },
+                            "host": {
+                                "connection": {
+                                    "name": "@parameters('$connections')['office365']['connectionId']"
+                                }
+                            },
+                            "method": "post",
+                            "path": "/Mail"
+                        },
+                        "runAfter": {},
+                        "type": "ApiConnection"
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Create_blob": {
+                            "inputs": {
+                                "body": "@body('Get_blob_content')",
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob_1']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/datasets/default/files",
+                                "queries": {
+                                    "folderPath": "/moderated",
+                                    "name": "@triggerBody()?['Name']",
+                                    "queryParametersSingleEncoded": true
+                                }
+                            },
+                            "runAfter": {},
+                            "runtimeConfiguration": {
+                                "contentTransfer": {
+                                    "transferMode": "Chunked"
+                                }
+                            },
+                            "type": "ApiConnection"
+                        },
+                        "Delete_blob": {
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "delete",
+                                "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent(triggerBody()?['Id']))}"
+                            },
+                            "runAfter": {
+                                "Create_blob": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection"
+                        }
+                    }
+                },
+                "expression": {
+                    "or": [
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['isImageAdultClassified']",
+                                true
+                            ]
+                        },
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['isImageRacyClassified']",
+                                true
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "If"
+            },
+            "Get_blob_content": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureblob']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent(triggerBody()?['Id']))}/content",
+                    "queries": {
+                        "inferContentType": true
+                    }
+                },
+                "runAfter": {
+                    "Set_Base_Content_Store_URL": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "HTTP": {
+                "inputs": {
+                    "body": {
+                        "dataRepresentation": "URL",
+                        "value": "@{variables('BaseContentUrl')}@{triggerBody()?['Path']}"
+                    },
+                    "method": "PUT",
+                    "uri": "@{variables('BaseModeratorUrl')}/api/images"
+                },
+                "runAfter": {
+                    "Get_blob_content": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "@body('HTTP')",
+                    "schema": {
+                        "properties": {
+                            "adultClassificationScore": {
+                                "type": "number"
+                            },
+                            "advancedInfo": {
+                                "items": {
+                                    "properties": {
+                                        "key": {
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "key",
+                                        "value"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "isImageAdultClassified": {
+                                "type": "boolean"
+                            },
+                            "isImageRacyClassified": {
+                                "type": "boolean"
+                            },
+                            "racyClassificationScore": {
+                                "type": "number"
+                            },
+                            "result": {
+                                "type": "boolean"
+                            },
+                            "status": {
+                                "properties": {
+                                    "code": {
+                                        "type": "number"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "exception": {}
+                                },
+                                "type": "object"
+                            },
+                            "trackingId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Set_Base_Content_Store_URL": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BaseContentUrl",
+                            "type": "String",
+                            "value": "https://contentmodstore.blob.core.windows.net"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Set_Base_Moderator_URL": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "InitializeVariable"
+            },
+            "Set_Base_Moderator_URL": {
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BaseModeratorUrl",
+                            "type": "String",
+                            "value": "https://contentmoderatorapi.azurewebsites.net"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "defaultValue": {},
+                "type": "Object"
+            }
+        },
+        "triggers": {
+            "When_a_blob_is_added_or_modified_(properties_only)": {
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['azureblob']['connectionId']"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/datasets/default/triggers/batch/onupdatedfile",
+                    "queries": {
+                        "folderId": "JTJmdW5tb2RlcmF0ZWQ=",
+                        "maxFileCount": 10
+                    }
+                },
+                "metadata": {
+                    "JTJmdW5tb2RlcmF0ZWQ=": "/unmoderated"
+                },
+                "recurrence": {
+                    "frequency": "Minute",
+                    "interval": 1
+                },
+                "splitOn": "@triggerBody()",
+                "type": "ApiConnection"
+            }
+        }
+    }
+}
