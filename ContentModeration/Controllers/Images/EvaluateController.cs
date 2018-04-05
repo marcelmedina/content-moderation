@@ -6,14 +6,14 @@ using ContentModeration.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace ContentModeration.Controllers
+namespace ContentModeration.Controllers.Images
 {
-    [Route("api/[controller]")]
-    public class ImagesController : Controller
+    [Route("api/images/[controller]")]
+    public class EvaluateController : Controller
     {
         private readonly IContentModerationService _service;
 
-        public ImagesController(IContentModerationService service)
+        public EvaluateController(IContentModerationService service)
         {
             _service = service;
         }
@@ -39,7 +39,7 @@ namespace ContentModeration.Controllers
                 // Request body
                 byte[] byteData = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
 
-                return await _service.ProcessImage(byteData, "application/json");
+                return Ok(await _service.ProcessImageEvaluate(byteData, "application/json"));
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace ContentModeration.Controllers
         {
             try
             {
-                return await _service.ProcessImage(byteData, contentType);
+                return Ok(await _service.ProcessImageEvaluate(byteData, contentType));
             }
             catch (Exception ex)
             {
