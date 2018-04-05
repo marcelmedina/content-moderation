@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using ContentModeration.Models;
 
 namespace ContentModeration.Services
 {
     public interface IContentModerationService
     {
-        Task<IActionResult> ProcessImage(byte[] byteData, string contentType);
+        Task<EvaluateResponse> ProcessImageEvaluate(byte[] byteData, string contentType);
+        Task<OcrResponse> ProcessImageOcr(byte[] byteData, string contentType, bool enhanced);
     }
 }

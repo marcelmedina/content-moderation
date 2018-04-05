@@ -1,6 +1,6 @@
 ﻿namespace ContentModeration.Models
 {
-    public class Response
+    public class EvaluateResponse
     {
         public float AdultClassificationScore { get; set; }
         public bool IsImageAdultClassified { get; set; }
