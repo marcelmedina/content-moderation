@@ -19,10 +19,10 @@ namespace ContentModeration.Controllers.Images
         }
 
         /// <summary>
-        /// Post a json image for content moderation
+        /// PUT a json image for content moderation
         /// </summary>
         /// <remarks>
-        ///     GET /Images
+        ///     PUT /Images
         ///     {
         ///         "DataRepresentation":"URL",
         ///         "Value":"https://moderatorsampleimages.blob.core.windows.net/samples/sample.jpg"
@@ -48,7 +48,7 @@ namespace ContentModeration.Controllers.Images
         }
 
         /// <summary>
-        /// Post a binary image for content moderation
+        /// POST a binary image for content moderation
         /// </summary>
         /// <param name="contentType">Acceptable as image/gif, image/jpeg, image/png, image/bmp</param>
         /// <param name="byteData"></param>

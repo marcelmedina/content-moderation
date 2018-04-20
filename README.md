@@ -34,8 +34,19 @@ git clone https://github.com/marcelmedina/ContentModeration.git
 - In the settings section, ensure public access is granted for content.
 #### Logic App Connector ####
 - To setup the logic app connector, login to the Azure Portal and create a new logic app connector.
-- Import the logic app connector file /LogicApp/contentmodeapi onto the logic app connector.
-- Save the logic app connector.
+- Export the swagger.json definition from the swagger endpoint.
+- When configuring the Custom Connector, a wizard will guide you through the setup process. Follow through these steps.
+On General tab:
+1. How do you want to create your connector?
+API endpoint = REST
+Upload an OpenAPI file = swagger.json (that was exported)
+2. General Information
+Host - set to your azure web app URL
+On Security tab:
+Leave the Authentication type as is (No authentication).
+3. On Definition
+Leave as it is, or update the description of endpoints if you prefer. (The Values endpoint can be removed as they are not used).
+After the changes make sure you click *Update the connector*.
 #### Logic App ####
 - To setup the logic app, login to the Azure Portal and create a new logic app.
 - Copy the contents of the json file /LogicApp/contentmoderation.json and paste it into the code view of the logic app that was created from the Azure Portal.
