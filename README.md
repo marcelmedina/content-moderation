@@ -83,3 +83,15 @@ After the changes make sure you click **Update the connector**.
 
 - Right now all the connections are established and all the additional actions added should be removed.
 - **Save** the logic app.
+
+# Additional References
+
+
+### Get started with Content Moderator
+https://docs.microsoft.com/gl-es/azure/cognitive-services/content-moderator/quick-start
+
+### Content Moderator SDKs and samples
+https://docs.microsoft.com/en-nz/azure/cognitive-services/content-moderator/sdk-and-samples
+
+### Cognitive Services samples
+https://github.com/Azure-Samples/cognitive-services-dotnet-sdk-samples/
