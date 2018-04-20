@@ -52,8 +52,33 @@ git clone https://github.com/marcelmedina/ContentModeration.git
 After the changes make sure you click **Update the connector**.
 #### Logic App ####
 - To setup the logic app, login to the Azure Portal and create a new logic app.
-- Copy the contents of the json file /LogicApp/contentmoderation.json and paste it into the code view of the logic app that was created from the Azure Portal.
-- Some components will be greyed out, this is because the connections are not configured.
-- Add some actions, in particular the Storage Account trigger action, the Logic App Connector and the Send Email action.
-- As soon as these actions are added, jump to Code View and edit the connections on json.
-- Save the logic app.
+- Copy the contents of the json file /LogicApp/contentmoderation.json and paste it into the *Code view* of the logic app that was created from the Azure Portal.
+	* Remove the json section **$connections** completely
+	* Save the Logic App
+- Switch to the *Design view*. Some components will be greyed out, this is because the connections are not configured.
+- Add the following extra actions to the workflow:
+1. Azure Blob Storage action
+	* Select the trigger *Azure Blob Storage - when a blob is added or modified (properties only)*
+	* Provide the connection name = **azureblob**
+	* Select the Storage Account created and click *OK*
+	* Then select the **unmoderated** container.
+
+*NOTE: At this stage jump to the Code view and update the references of previous connections to the new azureblob. Basically you need to search the json for old connection names like azureblob_1 and replace with azureblob.*
+*Remove any old connection references related to the blob storage.*
+
+2. Logic App Connector (the one just created)
+* Select the custom connector **content-moderator-connector**
+* The connection name will be mapped automatically on Code view as the name of the custom connector.
+
+*Note: The same approach should be adopted here to update the references of previous connections. Search for contentmodeapi and replace it with the new connection*
+*Remove any old connection references as well.*
+
+3. Office 365 Outlook - Send an email
+* Select the action *Office 365 Outlook - Send an email*
+	* Then sign in with your service account (it can be any account)
+
+*NOTE: At this stage jump to the Code view and update the references of previous connections to the new azureblob. Basically you need to search the json for old connection names like office365_1 and replace with office365.*
+*Remove any old connection references related.*
+
+- Right now all the connections are established and all the additional actions added should be removed.
+- **Save** the logic app.
