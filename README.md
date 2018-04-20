@@ -30,23 +30,26 @@ git clone https://github.com/marcelmedina/ContentModeration.git
 - Create a new Web App on Azure and deploy the API project to that Web App (*I find the quickest way to do this is to zip up the files in /debug/bin folder of the ContentModeration project and then drag and drop the zip file into https://[**YourWebAppName**].scm.azurewebsites.net/ZipDeploy*)
 - You may need to wait a few minutes before the server can restart and your API is now ready.
 #### Storage accounts ####
-- Using the Azure Portal, deploy a storage account and create 2 blob containers. One for unmoderated content and one for moderated content.
+- Using the Azure Portal, deploy a storage account and create 2 blob containers. One for **unmoderated** content and one for **moderated** content.
 - In the settings section, ensure public access is granted for content.
 #### Logic App Connector ####
 - To setup the logic app connector, login to the Azure Portal and create a new logic app connector.
 - Export the swagger.json definition from the swagger endpoint.
 - When configuring the Custom Connector, a wizard will guide you through the setup process. Follow through these steps.
-On General tab:
-1. How do you want to create your connector?
-API endpoint = REST
-Upload an OpenAPI file = swagger.json (that was exported)
-2. General Information
-Host - set to your azure web app URL
-On Security tab:
-Leave the Authentication type as is (No authentication).
-3. On Definition
-Leave as it is, or update the description of endpoints if you prefer. (The Values endpoint can be removed as they are not used).
-After the changes make sure you click *Update the connector*.
+1. On General tab:
+- How do you want to create your connector?
+	* API endpoint = **REST**
+	* Upload an OpenAPI file = **swagger.json** (that was exported)
+- General Information
+	* **Host** - set to your azure web app URL 
+	YourWebAppName.azurewebsites.net
+2. On Security tab:
+- Leave the Authentication type as is = **No authentication**
+3. On Definition tab:
+- Leave as it is, or update the description of endpoints if you prefer. 
+*(The Values endpoint can be removed as they are not used).*
+
+After the changes make sure you click **Update the connector**.
 #### Logic App ####
 - To setup the logic app, login to the Azure Portal and create a new logic app.
 - Copy the contents of the json file /LogicApp/contentmoderation.json and paste it into the code view of the logic app that was created from the Azure Portal.
