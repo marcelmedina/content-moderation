@@ -13,6 +13,8 @@ namespace ContentModeration
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .UseKestrel()
+                .CaptureStartupErrors(true)
                 .ConfigureAppConfiguration(SetupConfiguration)
                 .UseStartup<Startup>()
                 .Build();
