@@ -6,6 +6,16 @@
                 "connectionName": "azureblob",
                 "id": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/providers/Microsoft.Web/locations/australiaeast/managedApis/azureblob"
             },
+            "azureblob_1": {
+                "connectionId": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/connections/azureblob-1",
+                "connectionName": "azureblob-1",
+                "id": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/providers/Microsoft.Web/locations/australiaeast/managedApis/azureblob"
+            },
+            "contentmodeapi": {
+                "connectionId": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/connections/contentmodeapi",
+                "connectionName": "contentmodeapi",
+                "id": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/customApis/contentmodeapi"
+            },
             "office365": {
                 "connectionId": "/subscriptions/081e9f74-6b65-4ebb-b938-56fae7e38da2/resourceGroups/content-moderator-dev/providers/Microsoft.Web/connections/office365-1",
                 "connectionName": "office365-1",
@@ -23,7 +33,7 @@
                             "body": {
                                 "Body": "Incoming content is either adult/racy\nAdult classification score: @{body('Parse_JSON')?['adultClassificationScore']}\nRacy classification score: @{body('Parse_JSON')?['racyClassificationScore']}\n\nimage url: @{variables('BaseContentUrl')}@{triggerBody()?['Path']}",
                                 "Subject": "Inappropriate content determined",
-                                "To": ""
+                                "To": "marcelm@provoke.co.nz"
                             },
                             "host": {
                                 "connection": {
@@ -125,25 +135,9 @@
                 },
                 "type": "ApiConnection"
             },
-            "HTTP": {
-                "inputs": {
-                    "body": {
-                        "dataRepresentation": "URL",
-                        "value": "@{variables('BaseContentUrl')}@{triggerBody()?['Path']}"
-                    },
-                    "method": "PUT",
-                    "uri": "@{variables('BaseModeratorUrl')}/api/images"
-                },
-                "runAfter": {
-                    "Get_blob_content": [
-                        "Succeeded"
-                    ]
-                },
-                "type": "Http"
-            },
             "Parse_JSON": {
                 "inputs": {
-                    "content": "@body('HTTP')",
+                    "content": "@body('Put_a_json_image_for_content_moderation')",
                     "schema": {
                         "properties": {
                             "adultClassificationScore": {
@@ -199,11 +193,32 @@
                     }
                 },
                 "runAfter": {
-                    "HTTP": [
+                    "Put_a_json_image_for_content_moderation": [
                         "Succeeded"
                     ]
                 },
                 "type": "ParseJson"
+            },
+            "Put_a_json_image_for_content_moderation": {
+                "inputs": {
+                    "body": {
+                        "dataRepresentation": "URL",
+                        "value": "@{variables('BaseContentUrl')}@{triggerBody()?['Path']}"
+                    },
+                    "host": {
+                        "connection": {
+                            "name": "@parameters('$connections')['contentmodeapi']['connectionId']"
+                        }
+                    },
+                    "method": "put",
+                    "path": "/api/images/Evaluate"
+                },
+                "runAfter": {
+                    "Get_blob_content": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
             },
             "Set_Base_Content_Store_URL": {
                 "inputs": {

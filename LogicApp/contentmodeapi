@@ -1,0 +1,335 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "Content Moderation API",
+    "description": "A sample created for the Auckland Azure Bootcamp",
+    "contact": {
+      "name": "Marcel Medina",
+      "url": "http://sharepoint4developers.net"
+    }
+  },
+  "host": "content-moderator-api.azurewebsites.net",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [],
+  "produces": [],
+  "paths": {
+    "/api/images/Evaluate": {
+      "post": {
+        "tags": [
+          "Evaluate"
+        ],
+        "summary": "Post a binary image for content moderation",
+        "operationId": "ApiImagesEvaluatePost",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "contentType",
+            "in": "query",
+            "description": "Acceptable as image/gif, image/jpeg, image/png, image/bmp",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "byteData",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Evaluate"
+        ],
+        "summary": "Put a json image for content moderation",
+        "description": "PUT /Images{    \"DataRepresentation\":\"URL\",    \"Value\":\"https://moderatorsampleimages.blob.core.windows.net/samples/sample.jpg\"}",
+        "operationId": "ApiImagesEvaluatePut",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Json data",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Data"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/images/Ocr": {
+      "post": {
+        "tags": [
+          "Ocr"
+        ],
+        "summary": "Post a binary image for content moderation",
+        "operationId": "ApiImagesOcrPost",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "contentType",
+            "in": "query",
+            "description": "Acceptable as image/gif, image/jpeg, image/png, image/bmp",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "byteData",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "format": "byte"
+          },
+          {
+            "name": "enhanced",
+            "in": "query",
+            "description": "additional processing",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Ocr"
+        ],
+        "summary": "Post a json image for content moderation",
+        "description": "GET /Images\r\n{\r\n    \"DataRepresentation\":\"URL\",\r\n    \"Value\":\"https://moderatorsampleimages.blob.core.windows.net/samples/sample.jpg\"\r\n}",
+        "operationId": "ApiImagesOcrPut",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "data",
+            "in": "body",
+            "description": "Json data",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/Data"
+            }
+          },
+          {
+            "name": "enhanced",
+            "in": "query",
+            "description": "additional processing",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Values": {
+      "get": {
+        "tags": [
+          "Values"
+        ],
+        "summary": "GET api/values",
+        "operationId": "ApiValuesGet",
+        "consumes": [],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Values"
+        ],
+        "summary": "POST api/values",
+        "operationId": "ApiValuesPost",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "value",
+            "in": "body",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Values/{id}": {
+      "get": {
+        "tags": [
+          "Values"
+        ],
+        "summary": "GET api/values/5",
+        "description": "Sample request:\r\n            \r\n    GET /Values\r\n    {\r\n       \"id\": 1\r\n    }",
+        "operationId": "ApiValuesByIdGet",
+        "consumes": [],
+        "produces": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Values"
+        ],
+        "summary": "DELETE api/values/5",
+        "description": "Sample request:\r\n            \r\n    DELETE /Values\r\n    {\r\n       \"id\": 1\r\n    }",
+        "operationId": "ApiValuesByIdDelete",
+        "consumes": [],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Values"
+        ],
+        "summary": "PUT api/values/5",
+        "description": "Sample request:\r\n            \r\n    PUT /Values\r\n    {\r\n       \"id\": 1\r\n    }",
+        "operationId": "ApiValuesByIdPut",
+        "consumes": [
+          "application/json-patch+json",
+          "application/json",
+          "text/json",
+          "application/*+json"
+        ],
+        "produces": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "value",
+            "in": "body",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Data": {
+      "type": "object",
+      "properties": {
+        "dataRepresentation": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "parameters": {},
+  "responses": {},
+  "securityDefinitions": {},
+  "security": [],
+  "tags": []
+}
