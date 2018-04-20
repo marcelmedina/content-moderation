@@ -34,7 +34,8 @@ git clone https://github.com/marcelmedina/ContentModeration.git
 - In the settings section, ensure public access is granted for content.
 #### Logic App Connector ####
 - To setup the logic app connector, login to the Azure Portal and create a new logic app connector.
-- Export the swagger.json definition from the swagger endpoint.
+- Export the swagger.json definition from the swagger endpoint:
+https://YourWebAppName.azurewebsites.net/**swagger**
 - When configuring the Custom Connector, a wizard will guide you through the setup process. Follow through these steps.
 1. On General tab:
 - How do you want to create your connector?
