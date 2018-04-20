@@ -26,8 +26,20 @@ git clone https://github.com/marcelmedina/ContentModeration.git
 ```
 - Open the solution in visual Studio (*...or you could use the dotnet cli to run builds, it is built in .net core 2.0*)
 - Edit the appsettings.json file to add your Ocp-Apim-Subscription-Key that was generated from the review tool earlier.
-- Build the solution.
-- Create a new Web App on Azure and deploy the API project to that Web App (*I find the quickest way to do this is to zip up the files in /debug/bin folder of the ContentModeration project and then drag and drop the zip file into https://[**YourWebAppName**].scm.azurewebsites.net/ZipDeploy*)
+- Build and publish the solution.
+```
+C:\your_folder\ContentModeration\ContentModeration> dotnet build
+C:\your_folder\ContentModeration\ContentModeration> dotnet publish
+```
+- Create a new Web App on Azure and deploy the API project to that Web App (*I find the quickest way to do this is to zip up the files in the publish folder of the ContentModeration project and then drag and drop the zip file into ZipDeploy*)
+
+Go to this path and zip the files:
+```
+C:\your_folder\ContentModeration\ContentModeration\bin\Debug\netcoreapp2.0\publish
+```
+Drop the zip onto:
+https://[**YourWebAppName**].scm.azurewebsites.net/ZipDeploy
+
 - You may need to wait a few minutes before the server can restart and your API is now ready.
 #### Storage accounts ####
 - Using the Azure Portal, deploy a storage account and create 2 blob containers. One for **unmoderated** content and one for **moderated** content.
