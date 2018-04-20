@@ -6,7 +6,7 @@ A sample created for the Auckland Azure Bootcamp.
 ### Solution ###
 Author(s) | Contact
 -----------|--------
-Marcel Medina | [sharepoint4developers.net](sharepoint4developers.net)
+Marcel Medina | [sharepoint4developers.net](http://sharepoint4developers.net)
 Nawaz Gayoom | [@ngayoom](https://twitter.com/ngayoom)
 
 ### Version history ###
