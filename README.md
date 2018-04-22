@@ -24,9 +24,8 @@ Version  | Date | Comments
 ```
 git clone https://github.com/marcelmedina/ContentModeration.git
 ```
-- Open the solution in visual Studio (*...or you could use the dotnet cli to run builds, it is built in .net core 2.0*)
-- Edit the appsettings.json file to add your Ocp-Apim-Subscription-Key that was generated from the review tool earlier.
-- Build and publish the solution.
+- Open the solution in any editor, edit the appsettings.json file to add your Ocp-Apim-Subscription-Key that was generated from the review tool.
+- Build and publish the solution by using the following commands:
 ```
 C:\your_folder\ContentModeration\ContentModeration> dotnet build
 C:\your_folder\ContentModeration\ContentModeration> dotnet publish
@@ -37,6 +36,8 @@ Go to this path and zip the files:
 ```
 C:\your_folder\ContentModeration\ContentModeration\bin\Debug\netcoreapp2.0\publish
 ```
+*NOTE: Zip the files from the Debug folder. There is a bug with the solution if you use the Release folder.*
+
 Drop the zip onto:
 https://[**YourWebAppName**].scm.azurewebsites.net/ZipDeploy
 
