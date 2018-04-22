@@ -41,7 +41,7 @@ C:\your_folder\ContentModeration\ContentModeration\bin\Debug\netcoreapp2.0\publi
 Drop the zip onto:
 https://[**YourWebAppName**].scm.azurewebsites.net/ZipDeploy
 
-- You may need to wait a few minutes before the server can restart and your API is now ready.
+- In general there is no delay, and your app should be working. Try accessing https://[**YourWebAppName**].azurewebsites.net/swagger
 #### Storage accounts ####
 - Using the Azure Portal, deploy a storage account and create 2 blob containers. One for **unmoderated** content and one for **moderated** content.
 - In the settings section, ensure public access is granted for content.
